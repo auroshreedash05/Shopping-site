@@ -15,102 +15,28 @@
     header {
       background-color: #2874f0;
       color: white;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .product {
-      transition: all 0.3s ease;
-    }
-
-    .header-top {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.5em;
-    }
-
-    header a {
-      color: white;
-      text-decoration: none;
-      background-color: #2874f0;
-      padding: 10px 15px;
-      border-radius: 50%;
-      font-weight: bold;
+      padding: 15px 0;
+      text-align: center;
       font-size: 1.5rem;
-      position: relative;
-    }
-
-    #cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: red;
-      color: white;
-      font-size: 0.7rem;
-      padding: 3px 6px;
-      border-radius: 50%;
-      display: none;
-      border: 2px solid white;
-    }
-
-    .search-bar {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    #search-input {
-      width: 80%;
-      max-width: 400px;
-      padding: 10px 15px;
-      font-size: 1rem;
-      border: 2px solid #ddd;
-      border-radius: 20px;
-      outline: none;
-      transition: 0.3s;
-    }
-
-    #search-input:focus {
-      border-color: #2874f0;
-      box-shadow: 0 0 5px rgba(40, 116, 240, 0.5);
-    }
-
-    .location-bar {
-      display: flex;
-      align-items: center;
-      background-color: white;
-      color: #333;
-      border-radius: 5px;
-      padding: 5px 10px;
-      margin-top: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      font-size: 0.85rem;
-      font-weight: normal;
-      gap: 6px;
+      font-weight: bold;
     }
 
     .container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
-      padding: 40px 20px;
+      padding: 20px;
+      gap: 20px;
     }
 
     .product {
       background: white;
-      width: 300px;
+      width: 280px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease;
+      cursor: pointer;
     }
 
     .product:hover {
@@ -124,156 +50,181 @@
     }
 
     .details {
-      padding: 15px;
-      text-align: center;
+      padding: 10px 15px;
     }
 
     .details h2 {
-      font-size: 1.3em;
-      margin: 10px 0;
-      color: #333;
+      font-size: 1.1rem;
+      margin: 0;
     }
 
     .price {
-      color: green;
-      font-size: 1.2em;
-      margin-bottom: 10px;
+      color: #2874f0;
+      font-weight: bold;
+      margin: 8px 0;
     }
 
-    .stock-alert {
+    .low-stock {
       color: red;
       font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 0.9rem;
     }
 
-    .btn {
-      background-color: #ff9f00;
-      border: none;
+    /* Product modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .modal-images {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-images img {
+      width: 100%;
+      display: none;
+    }
+
+    .modal-images img.active {
+      display: block;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
       color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
+      padding: 8px;
+      border-radius: 50%;
       cursor: pointer;
-      font-weight: bold;
-      margin: 5px;
+      user-select: none;
     }
 
-    .btn:hover {
-      background-color: #fb641b;
-    }
+    .arrow.left { left: 10px; }
+    .arrow.right { right: 10px; }
 
-    footer {
-      background-color: white;
-      text-align: center;
+    .modal-details {
       padding: 15px;
-      color: #777;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #444;
     }
   </style>
 </head>
 <body>
+  <header>My Shopping Store</header>
 
-  <header>
-    <div class="header-top">
-      🛍️ My Shopping Store
-      <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
+  <div class="container" id="product-container"></div>
+
+  <!-- Product Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <div class="modal-images" id="modalImages"></div>
+      <span class="arrow left" id="prevImg">&#10094;</span>
+      <span class="arrow right" id="nextImg">&#10095;</span>
+      <div class="modal-details">
+        <h2 id="modalName"></h2>
+        <p class="price" id="modalPrice"></p>
+        <p id="modalStock"></p>
+      </div>
     </div>
-
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search products..." onkeyup="searchProducts()">
-    </div>
-
-    <div class="location-bar">
-      <span>🏠</span>
-      <span class="location-text" id="current-location">Home - Faridabad</span>
-      <span class="location-change" onclick="changeLocation()">Change</span>
-    </div>
-  </header>
-
-  <div class="container"></div>
-
-  <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  </div>
 
   <script>
-    const cartCount = document.getElementById('cart-count');
+    const products = JSON.parse(localStorage.getItem("products")) || [];
 
-    function updateCartCount() {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-      cartCount.style.display = totalItems > 0 ? 'inline-block' : 'none';
-      cartCount.textContent = totalItems;
-    }
+    const container = document.getElementById("product-container");
 
-    function searchProducts() {
-      const input = document.getElementById('search-input').value.toLowerCase();
-      const products = document.querySelectorAll('.product');
-      products.forEach(product => {
-        const name = product.querySelector('h2').textContent.toLowerCase();
-        product.style.display = name.includes(input) ? 'block' : 'none';
-      });
-    }
-
-    function changeLocation() {
-      const newLoc = prompt("Enter your delivery location:", localStorage.getItem('userLocation') || "Faridabad");
-      if (newLoc) {
-        document.getElementById('current-location').textContent = `Home - ${newLoc}`;
-        localStorage.setItem('userLocation', newLoc);
-      }
-    }
-
-    function loadProducts() {
-      const container = document.querySelector('.container');
-      container.innerHTML = '';
-
-      const products = JSON.parse(localStorage.getItem('products')) || [];
-      if (products.length === 0) {
-        container.innerHTML = '<p style="text-align:center;">No products available. Add some in the admin panel.</p>';
-        return;
-      }
-
-      products.forEach(p => {
-        const stockAlert = p.stock && p.stock < 6 ? `<div class="stock-alert">Only few left!</div>` : '';
-
-        const productHTML = `
-          <div class="product">
-            <img src="${p.image}" alt="${p.name}">
+    function renderProducts() {
+      container.innerHTML = "";
+      products.forEach((p, index) => {
+        const stockText = p.stock < 6 ? `<div class="low-stock">Only few left!</div>` : "";
+        container.innerHTML += `
+          <div class="product" data-index="${index}">
+            <img src="images/${p.images[0]}" alt="${p.name}">
             <div class="details">
               <h2>${p.name}</h2>
               <div class="price">₹${p.price}</div>
-              ${stockAlert}
-              <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
-              <button class="btn" style="background-color:#388e3c;">Buy Now</button>
+              ${stockText}
             </div>
           </div>
         `;
-        container.innerHTML += productHTML;
-      });
-
-      document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const name = btn.getAttribute('data-name');
-          const price = parseInt(btn.getAttribute('data-price'));
-          const image = btn.getAttribute('data-image');
-
-          let cart = JSON.parse(localStorage.getItem('cart')) || [];
-          const existing = cart.find(item => item.name === name);
-
-          if (existing) existing.quantity += 1;
-          else cart.push({ name, price, image, quantity: 1 });
-
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCartCount();
-          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-        });
       });
     }
 
-    window.onload = function() {
-      updateCartCount();
-      loadProducts();
-      const savedLoc = localStorage.getItem('userLocation');
-      if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
+    renderProducts();
+
+    // Modal functionality
+    const modal = document.getElementById("productModal");
+    const modalImages = document.getElementById("modalImages");
+    const modalName = document.getElementById("modalName");
+    const modalPrice = document.getElementById("modalPrice");
+    const modalStock = document.getElementById("modalStock");
+    const closeModal = document.getElementById("closeModal");
+    const prevImg = document.getElementById("prevImg");
+    const nextImg = document.getElementById("nextImg");
+
+    let currentImgIndex = 0;
+
+    container.addEventListener("click", e => {
+      const productCard = e.target.closest(".product");
+      if (!productCard) return;
+      const index = productCard.dataset.index;
+      const p = products[index];
+
+      modalName.textContent = p.name;
+      modalPrice.textContent = "₹" + p.price;
+      modalStock.innerHTML = p.stock < 6 ? `<span class="low-stock">Only few left!</span>` : "";
+
+      modalImages.innerHTML = p.images.map((img, i) =>
+        `<img src="images/${img}" class="${i === 0 ? "active" : ""}">`
+      ).join("");
+
+      currentImgIndex = 0;
+      modal.style.display = "flex";
+    });
+
+    closeModal.onclick = () => modal.style.display = "none";
+
+    prevImg.onclick = () => showImage(-1);
+    nextImg.onclick = () => showImage(1);
+
+    function showImage(dir) {
+      const imgs = modalImages.querySelectorAll("img");
+      imgs[currentImgIndex].classList.remove("active");
+      currentImgIndex = (currentImgIndex + dir + imgs.length) % imgs.length;
+      imgs[currentImgIndex].classList.add("active");
+    }
+
+    window.onclick = e => {
+      if (e.target === modal) modal.style.display = "none";
     };
   </script>
 </body>
