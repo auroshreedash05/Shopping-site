@@ -22,7 +22,8 @@
       font-weight: bold;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-  /* 🔄 Smooth transition for show/hide */
+
+    /* 🔄 Smooth transition for show/hide */
     .product {
       transition: all 0.3s ease;
     }
@@ -204,52 +205,9 @@
     </div>
   </header>
 
-  <div class="container">
-
-    <!-- Product 1 -->
-    <div class="product">
-      <img src="images/blue-tshirt.jpg" alt="T-Shirt">
-      <div class="details">
-        <h2>Cotton T-Shirt</h2>
-        <div class="price">₹499</div>
-        <button class="btn add-to-cart" data-name="Cotton T-Shirt" data-price="499" data-image="images/blue-tshirt.jpg">Add to Cart</button>
-        <button class="btn" style="background-color:#388e3c;">Buy Now</button>
-      </div>
-    </div>
-
-    <!-- Product 2 -->
-    <div class="product">
-      <img src="images/shoe.jpg" alt="Redtape Shoes">
-      <div class="details">
-        <h2>Redtape Shoes</h2>
-        <div class="price">₹1299</div>
-        <button class="btn add-to-cart" data-name="Redtape Shoes" data-price="1299" data-image="images/shoe.jpg">Add to Cart</button>
-        <button class="btn" style="background-color:#388e3c;">Buy Now</button>
-      </div>
-    </div>
-
-    <!-- Product 3 -->
-    <div class="product">
-      <img src="images/formalshirts.jpg" alt="Formal Shirts">
-      <div class="details">
-        <h2>Formal Shirts</h2>
-        <div class="price">₹699</div>
-        <button class="btn add-to-cart" data-name="Formal Shirts" data-price="699" data-image="images/formalshirts.jpg">Add to Cart</button>
-        <button class="btn" style="background-color:#388e3c;">Buy Now</button>
-      </div>
-    </div>
-
-    <!-- Product 4 -->
-    <div class="product">
-      <img src="images/jeans.jpg" alt="Baggy Denim Jeans">
-      <div class="details">
-        <h2>Baggy Jeans</h2>
-        <div class="price">₹899</div>
-        <button class="btn add-to-cart" data-name="Baggy Denim Jeans" data-price="899" data-image="images/jeans.jpg">Add to Cart</button>
-        <button class="btn" style="background-color:#388e3c;">Buy Now</button>
-      </div>
-    </div>
-
+  <!-- Dynamic Products Container -->
+  <div class="container" id="product-container">
+    <!-- Products will load here dynamically -->
   </div>
 
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
@@ -258,7 +216,6 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
-    const buttons = document.querySelectorAll('.add-to-cart');
     const cartCount = document.getElementById('cart-count');
 
     function updateCartCount() {
@@ -268,41 +225,60 @@
       cartCount.textContent = totalItems;
     }
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const name = btn.getAttribute('data-name');
-        const price = parseInt(btn.getAttribute('data-price'));
-        const image = btn.getAttribute('data-image');
+    // Load dynamic products
+    function loadProducts() {
+      const container = document.getElementById('product-container');
+      container.innerHTML = '';
 
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existing = cart.find(item => item.name === name);
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      if (products.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">No products available. Add some in the admin panel.</p>';
+        return;
+      }
 
-        if (existing) existing.quantity += 1;
-        else cart.push({ name, price, image, quantity: 1 });
+      products.forEach(p => {
+        const productHTML = `
+          <div class="product">
+            <img src="${p.image}" alt="${p.name}">
+            <div class="details">
+              <h2>${p.name}</h2>
+              <div class="price">₹${p.price}</div>
+              <p style="color:gray;">Stock: ${p.stock}</p>
+              <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
+              <button class="btn" style="background-color:#388e3c;">Buy Now</button>
+            </div>
+          </div>
+        `;
+        container.innerHTML += productHTML;
+      });
 
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
+      // Re-attach Add-to-Cart functionality
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const name = btn.getAttribute('data-name');
+          const price = parseInt(btn.getAttribute('data-price'));
+          const image = btn.getAttribute('data-image');
 
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#ff9f00', '#2874f0', '#00e676', '#ff4081']
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+          const existing = cart.find(item => item.name === name);
+
+          if (existing) existing.quantity += 1;
+          else cart.push({ name, price, image, quantity: 1 });
+
+          localStorage.setItem('cart', JSON.stringify(cart));
+          updateCartCount();
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         });
       });
-    });
+    }
 
- // Search function
+    // Search function
     function searchProducts() {
       const input = document.getElementById('search-input').value.toLowerCase();
       const products = document.querySelectorAll('.product');
       products.forEach(product => {
         const name = product.querySelector('h2').textContent.toLowerCase();
-        if (name.includes(input)) {
-          product.style.display = 'block';
-        } else {
-          product.style.display = 'none';
-        }
+        product.style.display = name.includes(input) ? 'block' : 'none';
       });
     }
 
@@ -315,65 +291,13 @@
       }
     }
 
-    // Load saved location
+    // Load everything
     window.onload = function() {
       updateCartCount();
+      loadProducts();
       const savedLoc = localStorage.getItem('userLocation');
       if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
     };
-    // Load dynamic products
-function loadProducts() {
-  const container = document.querySelector('.container');
-  container.innerHTML = '';
-
-  const products = JSON.parse(localStorage.getItem('products')) || [];
-  if (products.length === 0) {
-    container.innerHTML = '<p style="text-align:center;">No products available. Add some in the admin panel.</p>';
-    return;
-  }
-
-  products.forEach(p => {
-    const productHTML = `
-      <div class="product">
-        <img src="${p.image}" alt="${p.name}">
-        <div class="details">
-          <h2>${p.name}</h2>
-          <div class="price">₹${p.price}</div>
-          <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
-          <button class="btn" style="background-color:#388e3c;">Buy Now</button>
-        </div>
-      </div>
-    `;
-    container.innerHTML += productHTML;
-  });
-
-  // Re-attach add-to-cart functionality
-  document.querySelectorAll('.add-to-cart').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const name = btn.getAttribute('data-name');
-      const price = parseInt(btn.getAttribute('data-price'));
-      const image = btn.getAttribute('data-image');
-
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const existing = cart.find(item => item.name === name);
-
-      if (existing) existing.quantity += 1;
-      else cart.push({ name, price, image, quantity: 1 });
-
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartCount();
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-    });
-  });
-}
-
-window.onload = function() {
-  updateCartCount();
-  loadProducts();
-  const savedLoc = localStorage.getItem('userLocation');
-  if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
-};
-
   </script>
 </body>
 </html>
