@@ -7,145 +7,90 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 0;
     }
-
     header {
-      background: #2874f0;
+      background-color: #2874f0;
       color: white;
-      padding: 15px 20px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-size: 1.5em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
-
-    .back-btn {
-      background: white;
-      color: #2874f0;
-      border: none;
-      border-radius: 20px;
+    header a {
+      color: white;
+      text-decoration: none;
+      background-color: #ff9f00;
       padding: 8px 15px;
-      cursor: pointer;
-      font-weight: bold;
+      border-radius: 5px;
+      font-size: 1rem;
     }
-
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
+    .cart-container {
+      padding: 30px;
     }
-
     .cart-item {
+      background: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
     .cart-item img {
       width: 80px;
       height: 80px;
-      border-radius: 5px;
+      border-radius: 10px;
       object-fit: cover;
+      margin-right: 20px;
     }
-
-    .cart-info {
-      flex-grow: 1;
-      padding-left: 15px;
-    }
-
-    .cart-info h3 {
+    .cart-item h2 {
+      font-size: 1.2em;
       margin: 0;
-      color: #333;
     }
-
-    .cart-info p {
-      margin: 5px 0;
-      color: green;
-    }
-
-    .remove-btn {
-      background: #ff5252;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
     .total {
       text-align: right;
-      font-size: 1.2em;
+      font-size: 1.5em;
       font-weight: bold;
-      margin-top: 20px;
-    }
-
-    .empty {
-      text-align: center;
-      color: #777;
-      margin: 40px 0;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-
   <header>
-    🛍️ Your Cart
-    <button class="back-btn" onclick="window.location.href='index.html'">⬅️ Continue Shopping</button>
+    🛒 Your Cart
+    <a href="index.html">Back to Store</a>
   </header>
 
-  <div class="container" id="cartContainer"></div>
+  <div class="cart-container" id="cart-items"></div>
+  <div class="total" id="total"></div>
 
   <script>
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const container = document.getElementById("cartContainer");
+    const cartContainer = document.getElementById('cart-items');
+    const totalDisplay = document.getElementById('total');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    function renderCart() {
-      if (cart.length === 0) {
-        container.innerHTML = "<p class='empty'>Your cart is empty 🛒</p>";
-        return;
-      }
-
-      let total = 0;
-      container.innerHTML = "";
-
-      cart.forEach((item, index) => {
-        total += item.price;
-
-        const div = document.createElement("div");
-        div.classList.add("cart-item");
+    let total = 0;
+    if (cart.length === 0) {
+      cartContainer.innerHTML = "<p>Your cart is empty!</p>";
+    } else {
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
         div.innerHTML = `
           <img src="${item.image}" alt="${item.name}">
-          <div class="cart-info">
-            <h3>${item.name}</h3>
-            <p>₹${item.price}</p>
-          </div>
-          <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+          <h2>${item.name}</h2>
+          <p>₹${item.price} × ${item.quantity}</p>
         `;
-        container.appendChild(div);
+        cartContainer.appendChild(div);
       });
-
-      const totalDiv = document.createElement("div");
-      totalDiv.classList.add("total");
-      totalDiv.textContent = "Total: ₹" + total;
-      container.appendChild(totalDiv);
+      totalDisplay.textContent = "Total: ₹" + total;
     }
-
-    function removeItem(index) {
-      cart.splice(index, 1);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      renderCart();
-    }
-
-    renderCart();
   </script>
-
 </body>
 </html>
