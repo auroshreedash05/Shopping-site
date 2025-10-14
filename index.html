@@ -23,10 +23,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    .product {
-      transition: all 0.3s ease;
-    }
-
     .header-top {
       width: 100%;
       display: flex;
@@ -92,7 +88,6 @@
       margin-top: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       font-size: 0.85rem;
-      font-weight: normal;
       gap: 6px;
     }
 
@@ -106,11 +101,13 @@
 
     .product {
       background: white;
-      width: 300px;
+      width: 280px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
+      cursor: pointer;
       transition: all 0.3s ease;
+      text-align: center;
     }
 
     .product:hover {
@@ -119,31 +116,78 @@
 
     .product img {
       width: 100%;
-      height: 250px;
+      height: 230px;
       object-fit: cover;
     }
 
     .details {
-      padding: 15px;
-      text-align: center;
+      padding: 10px;
     }
 
     .details h2 {
-      font-size: 1.3em;
-      margin: 10px 0;
+      font-size: 1.1em;
+      margin: 10px 0 5px;
       color: #333;
     }
 
     .price {
       color: green;
-      font-size: 1.2em;
-      margin-bottom: 10px;
+      font-size: 1.1em;
     }
 
-    .stock-alert {
-      color: red;
-      font-weight: bold;
-      margin-bottom: 10px;
+    footer {
+      background-color: white;
+      text-align: center;
+      padding: 15px;
+      color: #777;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* MODAL STYLES */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      position: relative;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-images {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .modal-images img {
+      width: 30%;
+      height: 150px;
+      border-radius: 8px;
+      object-fit: cover;
     }
 
     .btn {
@@ -161,12 +205,9 @@
       background-color: #fb641b;
     }
 
-    footer {
-      background-color: white;
-      text-align: center;
-      padding: 15px;
-      color: #777;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -191,12 +232,31 @@
 
   <div class="container"></div>
 
+  <!-- Product Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">✖</span>
+      <div class="modal-images" id="modalImages"></div>
+      <h2 id="modalName"></h2>
+      <div class="price" id="modalPrice"></div>
+      <div id="modalStock"></div>
+      <button class="btn" id="addCartBtn">Add to Cart</button>
+      <button class="btn" style="background-color:#388e3c;">Buy Now</button>
+    </div>
+  </div>
+
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     const cartCount = document.getElementById('cart-count');
+    const modal = document.getElementById('productModal');
+    const modalName = document.getElementById('modalName');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalImages = document.getElementById('modalImages');
+    const modalStock = document.getElementById('modalStock');
+    const addCartBtn = document.getElementById('addCartBtn');
 
     function updateCartCount() {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -232,42 +292,50 @@
         return;
       }
 
-      products.forEach(p => {
-        const stockAlert = p.stock && p.stock < 6 ? `<div class="stock-alert">Only few left!</div>` : '';
-
+      products.forEach((p, i) => {
+        const mainImg = p.images?.[0] || 'images/default.jpg';
         const productHTML = `
-          <div class="product">
-            <img src="${p.image}" alt="${p.name}">
+          <div class="product" onclick="openModal(${i})">
+            <img src="${mainImg}" alt="${p.name}">
             <div class="details">
               <h2>${p.name}</h2>
               <div class="price">₹${p.price}</div>
-              ${stockAlert}
-              <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
-              <button class="btn" style="background-color:#388e3c;">Buy Now</button>
             </div>
           </div>
         `;
         container.innerHTML += productHTML;
       });
-
-      document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const name = btn.getAttribute('data-name');
-          const price = parseInt(btn.getAttribute('data-price'));
-          const image = btn.getAttribute('data-image');
-
-          let cart = JSON.parse(localStorage.getItem('cart')) || [];
-          const existing = cart.find(item => item.name === name);
-
-          if (existing) existing.quantity += 1;
-          else cart.push({ name, price, image, quantity: 1 });
-
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCartCount();
-          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-        });
-      });
     }
+
+    function openModal(index) {
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      const p = products[index];
+
+      modalName.textContent = p.name;
+      modalPrice.textContent = `₹${p.price}`;
+      modalImages.innerHTML = (p.images || []).map(img => `<img src="${img}" alt="${p.name}">`).join('');
+      modalStock.innerHTML = p.stock && p.stock < 6 ? `<div style="color:red;font-weight:bold;">Only few left!</div>` : '';
+
+      addCartBtn.onclick = () => {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existing = cart.find(item => item.name === p.name);
+        if (existing) existing.quantity += 1;
+        else cart.push({ name: p.name, price: p.price, image: p.images?.[0] || '', quantity: 1 });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      };
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = (e) => {
+      if (e.target === modal) closeModal();
+    };
 
     window.onload = function() {
       updateCartCount();
