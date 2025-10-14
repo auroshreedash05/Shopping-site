@@ -292,7 +292,7 @@
       });
     });
 
-    // Search function
+ // Search function
     function searchProducts() {
       const input = document.getElementById('search-input').value.toLowerCase();
       const products = document.querySelectorAll('.product');
@@ -321,6 +321,59 @@
       const savedLoc = localStorage.getItem('userLocation');
       if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
     };
+    // Load dynamic products
+function loadProducts() {
+  const container = document.querySelector('.container');
+  container.innerHTML = '';
+
+  const products = JSON.parse(localStorage.getItem('products')) || [];
+  if (products.length === 0) {
+    container.innerHTML = '<p style="text-align:center;">No products available. Add some in the admin panel.</p>';
+    return;
+  }
+
+  products.forEach(p => {
+    const productHTML = `
+      <div class="product">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="details">
+          <h2>${p.name}</h2>
+          <div class="price">₹${p.price}</div>
+          <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
+          <button class="btn" style="background-color:#388e3c;">Buy Now</button>
+        </div>
+      </div>
+    `;
+    container.innerHTML += productHTML;
+  });
+
+  // Re-attach add-to-cart functionality
+  document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name');
+      const price = parseInt(btn.getAttribute('data-price'));
+      const image = btn.getAttribute('data-image');
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existing = cart.find(item => item.name === name);
+
+      if (existing) existing.quantity += 1;
+      else cart.push({ name, price, image, quantity: 1 });
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    });
+  });
+}
+
+window.onload = function() {
+  updateCartCount();
+  loadProducts();
+  const savedLoc = localStorage.getItem('userLocation');
+  if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
+};
+
   </script>
 </body>
 </html>
