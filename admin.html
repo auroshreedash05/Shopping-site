@@ -1,240 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - My Shopping Store</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 0;
+<script>
+  function loadProducts() {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const list = document.getElementById('product-list');
+    list.innerHTML = '';
+
+    if (products.length === 0) {
+      list.innerHTML = '<p style="text-align:center;">No products added yet.</p>';
+      return;
     }
 
-    header {
-      background: #2874f0;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
+    products.forEach((p, index) => {
+      const imagesHTML = (p.images || [p.image || 'images/default.jpg'])
+        .map(img => `<img src="${img}" alt="${p.name}">`)
+        .join('');
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      color: #333;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    button {
-      background: #2874f0;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 10px;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #1a4fbf;
-    }
-
-    .product-list {
-      margin-top: 25px;
-    }
-
-    .product-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fafafa;
-    }
-
-    .product-info {
-      flex: 1;
-    }
-
-    .product-images img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      margin-right: 5px;
-      border-radius: 5px;
-    }
-
-    .actions button {
-      margin-left: 5px;
-    }
-
-    .edit-mode {
-      border: 2px solid #ff9f00;
-      background: #fff7e6;
-    }
-  </style>
-</head>
-<body>
-
-  <header>⚙️ Admin Panel</header>
-
-  <div class="container">
-    <h2>Add / Edit Product</h2>
-    <input type="hidden" id="edit-index">
-
-    <label>Product Name:</label>
-    <input type="text" id="product-name" placeholder="Enter product name">
-
-    <label>Price (₹):</label>
-    <input type="number" id="product-price" placeholder="Enter product price">
-
-    <label>Stock Quantity:</label>
-    <input type="number" id="product-stock" placeholder="Enter available stock">
-
-    <label>Image 1:</label>
-    <input type="file" id="product-image1" accept="image/*">
-
-    <label>Image 2:</label>
-    <input type="file" id="product-image2" accept="image/*">
-
-    <label>Image 3:</label>
-    <input type="file" id="product-image3" accept="image/*">
-
-    <button onclick="saveProduct()">💾 Save Product</button>
-
-    <div class="product-list" id="product-list"></div>
-  </div>
-
-  <script>
-    function loadProducts() {
-      const products = JSON.parse(localStorage.getItem('products')) || [];
-      const list = document.getElementById('product-list');
-      list.innerHTML = '';
-
-      if (products.length === 0) {
-        list.innerHTML = '<p style="text-align:center;">No products added yet.</p>';
-        return;
-      }
-
-      products.forEach((p, index) => {
-        const imagesHTML = (p.images || [p.image || 'images/default.jpg'])
-          .map(img => `<img src="${img}" alt="${p.name}">`)
-          .join('');
-
-        list.innerHTML += `
-          <div class="product-card" id="product-${index}">
-            <div class="product-info">
-              <strong>${p.name}</strong><br>
-              Price: ₹${p.price}<br>
-              Stock: ${p.stock || 0}
-            </div>
-            <div class="product-images">${imagesHTML}</div>
-            <div class="actions">
-              <button onclick="editProduct(${index})">✏️ Edit</button>
-              <button onclick="deleteProduct(${index})" style="background:red;">🗑️ Delete</button>
-            </div>
+      list.innerHTML += `
+        <div class="product-card" id="product-${index}">
+          <div class="product-info">
+            <strong>${p.name}</strong><br>
+            Price: ₹${p.price}<br>
+            Stock: ${p.stock || 0}
           </div>
-        `;
-      });
+          <div class="product-images">${imagesHTML}</div>
+          <div class="actions">
+            <button onclick="editProduct(${index})">✏️ Edit</button>
+            <button onclick="deleteProduct(${index})" style="background:red;">🗑️ Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function saveProduct() {
+    const name = document.getElementById('product-name').value.trim();
+    const price = parseInt(document.getElementById('product-price').value);
+    const stock = parseInt(document.getElementById('product-stock').value);
+    const img1 = document.getElementById('product-image1').files[0];
+    const img2 = document.getElementById('product-image2').files[0];
+    const img3 = document.getElementById('product-image3').files[0];
+    const editIndex = document.getElementById('edit-index').value;
+
+    if (!name || !price || !stock) {
+      alert("Please fill all fields!");
+      return;
     }
 
-    function saveProduct() {
-      const name = document.getElementById('product-name').value.trim();
-      const price = parseInt(document.getElementById('product-price').value);
-      const stock = parseInt(document.getElementById('product-stock').value);
-      const img1 = document.getElementById('product-image1').files[0];
-      const img2 = document.getElementById('product-image2').files[0];
-      const img3 = document.getElementById('product-image3').files[0];
-      const editIndex = document.getElementById('edit-index').value;
+    const products = JSON.parse(localStorage.getItem('products')) || [];
 
-      if (!name || !price || !stock) {
-        alert("Please fill all fields!");
-        return;
-      }
+    let imageUrls = [];
 
-      const products = JSON.parse(localStorage.getItem('products')) || [];
-
-      // Create image URLs
-      const imageUrls = [];
-      if (img1) imageUrls.push(URL.createObjectURL(img1));
-      if (img2) imageUrls.push(URL.createObjectURL(img2));
-      if (img3) imageUrls.push(URL.createObjectURL(img3));
-
-      const productData = { name, price, stock, images: imageUrls };
-
-      if (editIndex !== "") {
-        products[editIndex] = productData;
-        alert("✅ Product updated successfully!");
-        document.getElementById('edit-index').value = "";
-      } else {
-        products.push(productData);
-        alert("✅ Product added successfully!");
-      }
-
-      localStorage.setItem('products', JSON.stringify(products));
-      resetForm();
-      loadProducts();
+    // 🔹 If editing, keep old images unless new ones are uploaded
+    if (editIndex !== "") {
+      imageUrls = products[editIndex].images || [];
     }
 
-    function editProduct(index) {
-      const products = JSON.parse(localStorage.getItem('products')) || [];
-      const p = products[index];
-      document.getElementById('product-name').value = p.name;
-      document.getElementById('product-price').value = p.price;
-      document.getElementById('product-stock').value = p.stock || 0;
-      document.getElementById('edit-index').value = index;
+    // 🔹 Update or add new image slots only if a new file is uploaded
+    if (img1) imageUrls[0] = URL.createObjectURL(img1);
+    if (img2) imageUrls[1] = URL.createObjectURL(img2);
+    if (img3) imageUrls[2] = URL.createObjectURL(img3);
 
-      document.querySelectorAll('.product-card').forEach(card => card.classList.remove('edit-mode'));
-      document.getElementById(`product-${index}`).classList.add('edit-mode');
+    // 🔹 Make sure at least one image exists (default fallback)
+    if (imageUrls.length === 0) {
+      imageUrls.push('images/default.jpg');
     }
 
-    function deleteProduct(index) {
-      if (!confirm("Are you sure you want to delete this product?")) return;
-      const products = JSON.parse(localStorage.getItem('products')) || [];
-      products.splice(index, 1);
-      localStorage.setItem('products', JSON.stringify(products));
-      loadProducts();
-    }
+    const productData = { name, price, stock, images: imageUrls };
 
-    function resetForm() {
-      document.getElementById('product-name').value = "";
-      document.getElementById('product-price').value = "";
-      document.getElementById('product-stock').value = "";
-      document.getElementById('product-image1').value = "";
-      document.getElementById('product-image2').value = "";
-      document.getElementById('product-image3').value = "";
+    if (editIndex !== "") {
+      products[editIndex] = productData;
+      alert("✅ Product updated successfully!");
       document.getElementById('edit-index').value = "";
+    } else {
+      products.push(productData);
+      alert("✅ Product added successfully!");
     }
 
-    window.onload = loadProducts;
-  </script>
+    localStorage.setItem('products', JSON.stringify(products));
+    resetForm();
+    loadProducts();
+  }
 
-</body>
-</html>
+  function editProduct(index) {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const p = products[index];
+    document.getElementById('product-name').value = p.name;
+    document.getElementById('product-price').value = p.price;
+    document.getElementById('product-stock').value = p.stock || 0;
+    document.getElementById('edit-index').value = index;
+
+    document.querySelectorAll('.product-card').forEach(card => card.classList.remove('edit-mode'));
+    document.getElementById(`product-${index}`).classList.add('edit-mode');
+  }
+
+  function deleteProduct(index) {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    products.splice(index, 1);
+    localStorage.setItem('products', JSON.stringify(products));
+    loadProducts();
+  }
+
+  function resetForm() {
+    document.getElementById('product-name').value = "";
+    document.getElementById('product-price').value = "";
+    document.getElementById('product-stock').value = "";
+    document.getElementById('product-image1').value = "";
+    document.getElementById('product-image2').value = "";
+    document.getElementById('product-image3').value = "";
+    document.getElementById('edit-index').value = "";
+  }
+
+  window.onload = loadProducts;
+</script>
