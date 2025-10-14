@@ -16,9 +16,26 @@
       background-color: #2874f0;
       color: white;
       text-align: left;
-      padding: 15px 0;
+      padding: 15px 20px;
       font-size: 1.8em;
       font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart {
+      font-size: 0.7em;
+      background: white;
+      color: #2874f0;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .cart:hover {
+      background-color: #e3e3e3;
     }
 
     .container {
@@ -91,7 +108,10 @@
 </head>
 <body>
 
-  <header>🛒 My Shopping Store</header>
+  <header>
+    🛒 My Shopping Store
+    <div class="cart" onclick="showCart()">🛍️ Cart (<span id="cartCount">0</span>)</div>
+  </header>
 
   <div class="container">
 
@@ -101,7 +121,7 @@
       <div class="details">
         <h2>Blue Cotton T-Shirt</h2>
         <div class="price">₹499</div>
-        <button class="btn">Add to Cart</button>
+        <button class="btn" onclick="addToCart('Blue Cotton T-Shirt', 499)">Add to Cart</button>
         <button class="btn" style="background-color:#388e3c;">Buy Now</button>
       </div>
     </div>
@@ -112,7 +132,7 @@
       <div class="details">
         <h2>Stylish Running Shoes</h2>
         <div class="price">₹1,299</div>
-        <button class="btn">Add to Cart</button>
+        <button class="btn" onclick="addToCart('Stylish Running Shoes', 1299)">Add to Cart</button>
         <button class="btn" style="background-color:#388e3c;">Buy Now</button>
       </div>
     </div>
@@ -120,6 +140,29 @@
   </div>
 
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
+
+  <script>
+    let cart = [];
+    const cartCount = document.getElementById("cartCount");
+
+    function addToCart(productName, price) {
+      cart.push({ name: productName, price: price });
+      cartCount.textContent = cart.length;
+      alert(productName + " added to cart!");
+    }
+
+    function showCart() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+      } else {
+        let cartItems = "🛍️ Your Cart:\n\n";
+        cart.forEach((item, i) => {
+          cartItems += `${i + 1}. ${item.name} - ₹${item.price}\n`;
+        });
+        alert(cartItems);
+      }
+    }
+  </script>
 
 </body>
 </html>
