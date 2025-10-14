@@ -1,103 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    header {
-      background-color: #2874f0;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.5em;
-    }
-
-    header a {
-      color: white;
-      text-decoration: none;
-      background-color: #ff9f00;
-      padding: 8px 15px;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    .cart-container {
-      padding: 30px;
-    }
-
-    .cart-item {
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .cart-item img {
-      width: 80px;
-      height: 80px;
-      border-radius: 10px;
-      object-fit: cover;
-      margin-right: 20px;
-    }
-
-    .cart-item h2 {
-      font-size: 1.2em;
-      margin: 0;
-    }
-
-    .total {
-      text-align: right;
-      font-size: 1.5em;
-      font-weight: bold;
-      padding: 20px;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    🛒 Your Cart
-    <a href="index.html">Back to Store</a>
-  </header>
-
-  <div class="cart-container" id="cart-items"></div>
-  <div class="total" id="total"></div>
-
-  <script>
-    const cartContainer = document.getElementById('cart-items');
-    const totalDisplay = document.getElementById('total');
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+function updateCartDisplay() {
+    const cartItemsContainer = document.getElementById("cart-items");
+    const totalPriceElement = document.getElementById("total-price");
+    cartItemsContainer.innerHTML = "";
 
     let total = 0;
-    if (cart.length === 0) {
-      cartContainer.innerHTML = "<p>Your cart is empty!</p>";
-    } else {
-      cart.forEach(item => {
+
+    cart.forEach((item, index) => {
         total += item.price * item.quantity;
-        const div = document.createElement('div');
-        div.classList.add('cart-item');
-        div.innerHTML = `
-          <img src="${item.image}" alt="${item.name}">
-          <h2>${item.name}</h2>
-          <p>₹${item.price} × ${item.quantity}</p>
+        cartItemsContainer.innerHTML += `
+            <div class="cart-item" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #ddd; padding:8px;">
+                <div>
+                    <strong>${item.name}</strong> - ₹${item.price} × ${item.quantity}
+                </div>
+                <div>
+                    <button onclick="decreaseQuantity(${index})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">-</button>
+                </div>
+            </div>
         `;
-        cartContainer.appendChild(div);
-      });
-      totalDisplay.textContent = "Total: ₹" + total;
+    });
+
+    totalPriceElement.textContent = `₹${total}`;
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// Decrease quantity or remove if 0
+function decreaseQuantity(index) {
+    if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+    } else {
+        cart.splice(index, 1);
     }
-  </script>
-</body>
-</html>
+    updateCartDisplay();
+    updateCartCount();
+}
+
+function updateCartCount() {
+    const cartCount = document.getElementById("cart-count");
+    if (cartCount) {
+        cartCount.textContent = cart.length > 0 ? cart.length : "";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateCartDisplay();
+    updateCartCount();
+});
+</script>
