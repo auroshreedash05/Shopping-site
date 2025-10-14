@@ -12,19 +12,18 @@
       padding: 0;
     }
 
-    <header>
-  <div class="header-left">
-    🛒 My Shopping Store
-    <div class="location-bar">
-      <span class="location-icon">🏠</span>
-      <span class="location-text">Deliver to: Home - Faridabad, Haryana</span>
-    </div>
-  </div>
-  <a href="cart.html" class="cart-icon">
-    🛍️ <span id="cart-count"></span>
-  </a>
-</header>
-  .header-top {
+    header {
+      background-color: #2874f0;
+      color: white;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .header-top {
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -57,38 +56,35 @@
       border: 2px solid white;
     }
 
-    /* Location Bar */
+    /* Small home-style Location Bar */
     .location-bar {
-      margin-top: 8px;
-      background-color: #1565c0;
-      padding: 8px 12px;
-      border-radius: 5px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.95rem;
+      background-color: white;
+      color: #333;
+      border-radius: 5px;
+      padding: 5px 10px;
+      margin-top: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 0.85rem;
+      font-weight: normal;
+      gap: 6px;
     }
 
-    .location-bar input {
-      padding: 6px;
-      border: none;
-      border-radius: 4px;
-      width: 200px;
-      font-size: 0.9rem;
+    .location-bar span {
+      font-size: 1rem;
     }
 
-    .location-bar button {
-      background-color: #ff9f00;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
+    .location-text {
+      color: #222;
+      font-weight: 500;
+    }
+
+    .location-change {
+      color: #2874f0;
       font-weight: bold;
-    }
-
-    .location-bar button:hover {
-      background-color: #fb641b;
+      cursor: pointer;
+      font-size: 0.8rem;
     }
 
     .container {
@@ -167,11 +163,11 @@
       <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
     </div>
 
-    <!-- Location Bar -->
+    <!-- Simple home-style Location Bar -->
     <div class="location-bar">
-      <span>📍 Deliver to:</span>
-      <input type="text" id="location-input" placeholder="Enter your city or pincode">
-      <button onclick="saveLocation()">Set</button>
+      <span>🏠</span>
+      <span class="location-text" id="current-location">Home - Faridabad</span>
+      <span class="location-change" onclick="changeLocation()">Change</span>
     </div>
   </header>
 
@@ -241,19 +237,20 @@
       });
     });
 
-    // Save and load location
-    function saveLocation() {
-      const loc = document.getElementById('location-input').value.trim();
-      if (loc) {
-        localStorage.setItem('userLocation', loc);
-        alert(`📍 Delivery location set to: ${loc}`);
+    // Change location prompt
+    function changeLocation() {
+      const newLoc = prompt("Enter your delivery location:", localStorage.getItem('userLocation') || "Faridabad");
+      if (newLoc) {
+        document.getElementById('current-location').textContent = `Home - ${newLoc}`;
+        localStorage.setItem('userLocation', newLoc);
       }
     }
 
+    // Load saved location
     window.onload = function() {
       updateCartCount();
       const savedLoc = localStorage.getItem('userLocation');
-      if (savedLoc) document.getElementById('location-input').value = savedLoc;
+      if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
     };
   </script>
 </body>
