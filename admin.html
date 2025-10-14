@@ -118,13 +118,13 @@
     <label>Stock Quantity:</label>
     <input type="number" id="product-stock" placeholder="Enter available stock">
 
-    <label>Image 1:</label>
+    <label>Image 1 (Required):</label>
     <input type="file" id="product-image1" accept="image/*">
 
-    <label>Image 2:</label>
+    <label>Image 2 (Required):</label>
     <input type="file" id="product-image2" accept="image/*">
 
-    <label>Image 3:</label>
+    <label>Image 3 (Optional):</label>
     <input type="file" id="product-image3" accept="image/*">
 
     <button onclick="saveProduct()">💾 Save Product</button>
@@ -174,16 +174,23 @@
       const img3 = document.getElementById('product-image3').files[0];
       const editIndex = document.getElementById('edit-index').value;
 
-      if (!name || !price || !stock) {
-        alert("Please fill all fields!");
-        return;
-      }
-
       const products = JSON.parse(localStorage.getItem('products')) || [];
+
+      // Validation
+      if (!name) return alert("⚠️ Please enter product name!");
+      if (!price || price <= 0) return alert("⚠️ Please enter valid product price!");
+      if (!stock || stock < 0) return alert("⚠️ Please enter valid stock quantity!");
+
+      if (editIndex === "") {
+        // For new product, ensure at least image 1 & 2
+        if (!img1 || !img2) {
+          alert("⚠️ Please upload both Image 1 and Image 2 before saving!");
+          return;
+        }
+      }
 
       const readerPromises = [];
 
-      // convert image to base64 if uploaded
       [img1, img2, img3].forEach(file => {
         if (file) {
           const reader = new FileReader();
@@ -197,19 +204,19 @@
 
       Promise.all(readerPromises).then(imagesBase64 => {
         if (editIndex !== "") {
-          // Editing existing product
+          // Edit existing product
           const existing = products[editIndex];
           const updated = {
             name,
             price,
             stock,
-            images: imagesBase64.length > 0 ? imagesBase64 : existing.images // keep old if no new
+            images: imagesBase64.length > 0 ? imagesBase64 : existing.images
           };
           products[editIndex] = updated;
           alert("✅ Product updated successfully!");
           document.getElementById('edit-index').value = "";
         } else {
-          // Adding new product
+          // Add new product
           const productData = { name, price, stock, images: imagesBase64 };
           products.push(productData);
           alert("✅ Product added successfully!");
