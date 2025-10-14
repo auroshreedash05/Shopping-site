@@ -23,7 +23,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* 🔄 Smooth transition for show/hide */
     .product {
       transition: all 0.3s ease;
     }
@@ -47,7 +46,6 @@
       position: relative;
     }
 
-    /* Cart count bubble */
     #cart-count {
       position: absolute;
       top: -5px;
@@ -61,7 +59,6 @@
       border: 2px solid white;
     }
 
-    /* 🔍 Search Bar */
     .search-bar {
       width: 100%;
       display: flex;
@@ -85,7 +82,6 @@
       box-shadow: 0 0 5px rgba(40, 116, 240, 0.5);
     }
 
-    /* Small home-style Location Bar */
     .location-bar {
       display: flex;
       align-items: center;
@@ -98,22 +94,6 @@
       font-size: 0.85rem;
       font-weight: normal;
       gap: 6px;
-    }
-
-    .location-bar span {
-      font-size: 1rem;
-    }
-
-    .location-text {
-      color: #222;
-      font-weight: 500;
-    }
-
-    .location-change {
-      color: #2874f0;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.8rem;
     }
 
     .container {
@@ -160,6 +140,12 @@
       margin-bottom: 10px;
     }
 
+    .stock-alert {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
     .btn {
       background-color: #ff9f00;
       border: none;
@@ -192,12 +178,10 @@
       <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
     </div>
 
-    <!-- 🔍 Search Bar -->
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Search products..." onkeyup="searchProducts()">
     </div>
 
-    <!-- Simple home-style Location Bar -->
     <div class="location-bar">
       <span>🏠</span>
       <span class="location-text" id="current-location">Home - Faridabad</span>
@@ -205,14 +189,10 @@
     </div>
   </header>
 
-  <!-- Dynamic Products Container -->
-  <div class="container" id="product-container">
-    <!-- Products will load here dynamically -->
-  </div>
+  <div class="container"></div>
 
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
 
-  <!-- Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
@@ -225,9 +205,25 @@
       cartCount.textContent = totalItems;
     }
 
-    // Load dynamic products
+    function searchProducts() {
+      const input = document.getElementById('search-input').value.toLowerCase();
+      const products = document.querySelectorAll('.product');
+      products.forEach(product => {
+        const name = product.querySelector('h2').textContent.toLowerCase();
+        product.style.display = name.includes(input) ? 'block' : 'none';
+      });
+    }
+
+    function changeLocation() {
+      const newLoc = prompt("Enter your delivery location:", localStorage.getItem('userLocation') || "Faridabad");
+      if (newLoc) {
+        document.getElementById('current-location').textContent = `Home - ${newLoc}`;
+        localStorage.setItem('userLocation', newLoc);
+      }
+    }
+
     function loadProducts() {
-      const container = document.getElementById('product-container');
+      const container = document.querySelector('.container');
       container.innerHTML = '';
 
       const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -237,13 +233,15 @@
       }
 
       products.forEach(p => {
+        const stockAlert = p.stock && p.stock < 6 ? `<div class="stock-alert">Only few left!</div>` : '';
+
         const productHTML = `
           <div class="product">
             <img src="${p.image}" alt="${p.name}">
             <div class="details">
               <h2>${p.name}</h2>
               <div class="price">₹${p.price}</div>
-              <p style="color:gray;">Stock: ${p.stock}</p>
+              ${stockAlert}
               <button class="btn add-to-cart" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
               <button class="btn" style="background-color:#388e3c;">Buy Now</button>
             </div>
@@ -252,7 +250,6 @@
         container.innerHTML += productHTML;
       });
 
-      // Re-attach Add-to-Cart functionality
       document.querySelectorAll('.add-to-cart').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.getAttribute('data-name');
@@ -272,26 +269,6 @@
       });
     }
 
-    // Search function
-    function searchProducts() {
-      const input = document.getElementById('search-input').value.toLowerCase();
-      const products = document.querySelectorAll('.product');
-      products.forEach(product => {
-        const name = product.querySelector('h2').textContent.toLowerCase();
-        product.style.display = name.includes(input) ? 'block' : 'none';
-      });
-    }
-
-    // Change location prompt
-    function changeLocation() {
-      const newLoc = prompt("Enter your delivery location:", localStorage.getItem('userLocation') || "Faridabad");
-      if (newLoc) {
-        document.getElementById('current-location').textContent = `Home - ${newLoc}`;
-        localStorage.setItem('userLocation', newLoc);
-      }
-    }
-
-    // Load everything
     window.onload = function() {
       updateCartCount();
       loadProducts();
