@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - My Shopping Store</title>
+  <title>Admin Panel | My Shopping Store</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f9fc;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f6f9;
       margin: 0;
       padding: 0;
     }
@@ -15,63 +15,106 @@
     header {
       background-color: #2874f0;
       color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 1.5em;
+      padding: 15px 30px;
+      font-size: 1.4em;
       font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      background-color: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    header a:hover {
+      background-color: rgba(255,255,255,0.4);
     }
 
     .container {
-      padding: 30px;
       max-width: 900px;
-      margin: auto;
-    }
-
-    .form-section {
+      margin: 40px auto;
       background: white;
-      padding: 20px;
+      padding: 25px 30px;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    .form-section h2 {
-      margin-bottom: 15px;
+    h2 {
       color: #333;
+      border-bottom: 2px solid #2874f0;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+      font-weight: 600;
     }
 
-    input, textarea {
-      width: 100%;
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    label {
+      font-weight: 500;
+      color: #444;
+    }
+
+    input, select {
       padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
+      border: 2px solid #ddd;
       border-radius: 5px;
+      outline: none;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #2874f0;
+      box-shadow: 0 0 5px rgba(40,116,240,0.4);
     }
 
     button {
+      grid-column: span 2;
       background-color: #2874f0;
       color: white;
+      padding: 12px;
+      font-size: 1rem;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: 0.3s;
       font-weight: bold;
     }
 
     button:hover {
-      background-color: #0056c1;
+      background-color: #1a5cd6;
+    }
+
+    .table-container {
+      margin-top: 40px;
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
     }
 
     th {
@@ -83,40 +126,66 @@
       width: 60px;
       height: 60px;
       object-fit: cover;
-      border-radius: 5px;
+      border-radius: 8px;
     }
 
-    .delete-btn {
-      background-color: #ff4d4d;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
+    .preview {
+      grid-column: span 2;
+      text-align: center;
     }
 
-    .delete-btn:hover {
-      background-color: #e60000;
+    .preview img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <header>🛠️ Admin Panel</header>
+  <header>
+    🛠️ Admin Panel
+    <a href="index.html">🏬 View Store</a>
+  </header>
 
   <div class="container">
-    <div class="form-section">
-      <h2>Add / Update Product</h2>
-      <input type="text" id="name" placeholder="Product Name" required>
-      <input type="number" id="price" placeholder="Price ₹" required>
-      <input type="text" id="image" placeholder="Image Path (e.g. images/blue-tshirt.jpg)" required>
-      <input type="number" id="stock" placeholder="Stock Quantity" required>
-      <button onclick="addProduct()">Save Product</button>
-    </div>
+    <h2>Add / Edit Product</h2>
 
-    <div class="form-section">
-      <h2>Product List</h2>
-      <table id="productTable">
+    <form id="product-form">
+      <div>
+        <label>Product Name:</label>
+        <input type="text" id="name" placeholder="e.g. Cotton T-Shirt" required>
+      </div>
+
+      <div>
+        <label>Price (₹):</label>
+        <input type="number" id="price" placeholder="e.g. 499" required>
+      </div>
+
+      <div>
+        <label>Stock:</label>
+        <input type="number" id="stock" placeholder="e.g. 50" required>
+      </div>
+
+      <div>
+        <label>Image Path:</label>
+        <input type="text" id="image" value="images/" placeholder="images/product.jpg" required>
+      </div>
+
+      <div class="preview">
+        <label>Image Preview:</label><br>
+        <img id="image-preview" src="images/default.jpg" alt="Preview">
+      </div>
+
+      <button type="submit">💾 Save Product</button>
+    </form>
+
+    <div class="table-container">
+      <h2>📦 Product List</h2>
+      <table>
         <thead>
           <tr>
             <th>Image</th>
@@ -126,42 +195,71 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="product-table">
+          <!-- Products appear here -->
+        </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    function getProducts() {
-      return JSON.parse(localStorage.getItem('products')) || [];
-    }
+    const form = document.getElementById('product-form');
+    const table = document.getElementById('product-table');
+    const preview = document.getElementById('image-preview');
 
-    function saveProducts(products) {
-      localStorage.setItem('products', JSON.stringify(products));
-    }
+    // 🖼️ Live Image Preview
+    document.getElementById('image').addEventListener('input', e => {
+      preview.src = e.target.value || 'images/default.jpg';
+    });
 
-    function renderProducts() {
-      const products = getProducts();
-      const tableBody = document.querySelector('#productTable tbody');
-      tableBody.innerHTML = '';
-
-      products.forEach((p, index) => {
+    // 🧠 Load products
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      table.innerHTML = '';
+      products.forEach((p, i) => {
         const row = `
           <tr>
             <td><img src="${p.image}" alt="${p.name}"></td>
             <td>${p.name}</td>
             <td>₹${p.price}</td>
             <td>${p.stock}</td>
-            <td><button class="delete-btn" onclick="deleteProduct(${index})">Delete</button></td>
+            <td>
+              <button onclick="deleteProduct(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">Delete</button>
+            </td>
           </tr>
         `;
-        tableBody.innerHTML += row;
+        table.insertAdjacentHTML('beforeend', row);
       });
     }
 
-    function addProduct() {
+    // 💾 Save product
+    form.addEventListener('submit', e => {
+      e.preventDefault();
       const name = document.getElementById('name').value;
-      const price = parseInt(document.getElementById('price').value);
-      const image = document.getElementById('image').value;
-      const stock = parseInt(document.getElementById('st
+      const price = document.getElementById('price').value;
+      const stock = document.getElementById('stock').value;
+      const image = document.getElementById('image').value || 'images/default.jpg';
 
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      products.push({ name, price, stock, image });
+      localStorage.setItem('products', JSON.stringify(products));
+
+      alert('✅ Product saved successfully!');
+      form.reset();
+      preview.src = 'images/default.jpg';
+      loadProducts();
+    });
+
+    // 🗑️ Delete product
+    function deleteProduct(index) {
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      products.splice(index, 1);
+      localStorage.setItem('products', JSON.stringify(products));
+      loadProducts();
+    }
+
+    // 🚀 Load products on start
+    loadProducts();
+  </script>
+</body>
+</html>
