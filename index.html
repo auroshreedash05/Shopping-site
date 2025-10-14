@@ -182,13 +182,16 @@
       gap: 10px;
       margin-bottom: 15px;
       overflow-x: auto;
+      scroll-snap-type: x mandatory;
     }
 
     .modal-images img {
-      width: 30%;
+      width: 100%;
+      max-width: 180px;
       height: 150px;
       border-radius: 8px;
       object-fit: cover;
+      scroll-snap-align: center;
     }
 
     .btn {
@@ -294,17 +297,19 @@
       }
 
       products.forEach((p, i) => {
-        // ✅ Handle both single and multiple images
-        let imageUrl;
-        if (Array.isArray(p.images)) {
-          imageUrl = p.images.length > 0 ? p.images[0] : 'images/default.jpg';
+        let mainImg = '';
+
+        if (Array.isArray(p.images) && p.images.length > 0) {
+          mainImg = p.images[0];
+        } else if (p.image) {
+          mainImg = p.image;
         } else {
-          imageUrl = p.images || 'images/default.jpg';
+          mainImg = 'images/default.jpg';
         }
 
         const productHTML = `
           <div class="product" onclick="openModal(${i})">
-            <img src="${imageUrl}" alt="${p.name}">
+            <img src="${mainImg}" alt="${p.name}">
             <div class="details">
               <h2>${p.name}</h2>
               <div class="price">₹${p.price}</div>
@@ -322,9 +327,11 @@
       modalName.textContent = p.name;
       modalPrice.textContent = `₹${p.price}`;
       
-      // ✅ Handle single or multiple images in modal
-      const imageArray = Array.isArray(p.images) ? p.images : [p.images || 'images/default.jpg'];
-      modalImages.innerHTML = imageArray.map(img => `<img src="${img}" alt="${p.name}">`).join('');
+      const imgs = Array.isArray(p.images) && p.images.length > 0 ? p.images 
+                  : p.image ? [p.image] 
+                  : ['images/default.jpg'];
+
+      modalImages.innerHTML = imgs.map(img => `<img src="${img}" alt="${p.name}">`).join('');
 
       modalStock.innerHTML = p.stock && p.stock < 6 ? `<div style="color:red;font-weight:bold;">Only few left!</div>` : '';
 
@@ -332,7 +339,7 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const existing = cart.find(item => item.name === p.name);
         if (existing) existing.quantity += 1;
-        else cart.push({ name: p.name, price: p.price, image: imageArray[0], quantity: 1 });
+        else cart.push({ name: p.name, price: p.price, image: imgs[0], quantity: 1 });
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
