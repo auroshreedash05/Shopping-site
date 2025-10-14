@@ -31,11 +31,6 @@
       font-size: 1.5em;
     }
 
-    <div class="search-bar">
-  <input type="text" id="search-input" placeholder="Search products..." onkeyup="searchProducts()">
-</div>
-    }
-
     header a {
       color: white;
       text-decoration: none;
@@ -59,6 +54,30 @@
       border-radius: 50%;
       display: none;
       border: 2px solid white;
+    }
+
+    /* 🔍 Search Bar */
+    .search-bar {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    #search-input {
+      width: 80%;
+      max-width: 400px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    #search-input:focus {
+      border-color: #2874f0;
+      box-shadow: 0 0 5px rgba(40, 116, 240, 0.5);
     }
 
     /* Small home-style Location Bar */
@@ -91,30 +110,6 @@
       cursor: pointer;
       font-size: 0.8rem;
     }
- /* 🔍 Search Bar Styles */
-    .search-bar {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    #search-input {
-      width: 80%;
-      max-width: 400px;
-      padding: 10px 15px;
-      font-size: 1rem;
-      border: 2px solid #ddd;
-      border-radius: 20px;
-      outline: none;
-      transition: 0.3s;
-    }
-
-    #search-input:focus {
-      border-color: #2874f0;
-      box-shadow: 0 0 5px rgba(40, 116, 240, 0.5);
-    }
-
 
     .container {
       display: flex;
@@ -130,13 +125,8 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: transform 0.2s ease;
-    }
-/* 🔄 Smooth transition for show/hide */
-    .product {
       transition: all 0.3s ease;
     }
-
 
     .product:hover {
       transform: translateY(-5px);
@@ -148,7 +138,7 @@
       object-fit: cover;
     }
 
-     .details {
+    .details {
       padding: 15px;
       text-align: center;
     }
@@ -195,6 +185,11 @@
     <div class="header-top">
       🛍️ My Shopping Store
       <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
+    </div>
+
+    <!-- 🔍 Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search products..." onkeyup="searchProducts()">
     </div>
 
     <!-- Simple home-style Location Bar -->
@@ -251,7 +246,6 @@
       </div>
     </div>
 
-
   </div>
 
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
@@ -294,6 +288,20 @@
       });
     });
 
+    // Search function
+    function searchProducts() {
+      const input = document.getElementById('search-input').value.toLowerCase();
+      const products = document.querySelectorAll('.product');
+      products.forEach(product => {
+        const name = product.querySelector('h2').textContent.toLowerCase();
+        if (name.includes(input)) {
+          product.style.display = 'block';
+        } else {
+          product.style.display = 'none';
+        }
+      });
+    }
+
     // Change location prompt
     function changeLocation() {
       const newLoc = prompt("Enter your delivery location:", localStorage.getItem('userLocation') || "Faridabad");
@@ -308,8 +316,6 @@
       updateCartCount();
       const savedLoc = localStorage.getItem('userLocation');
       if (savedLoc) document.getElementById('current-location').textContent = `Home - ${savedLoc}`;
-      }
-
     };
   </script>
 </body>
