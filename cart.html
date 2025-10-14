@@ -1,51 +1,171 @@
-<script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
 
-function updateCartDisplay() {
-    const cartItemsContainer = document.getElementById("cart-items");
-    const totalPriceElement = document.getElementById("total-price");
-    cartItemsContainer.innerHTML = "";
+    header {
+      background-color: #2874f0;
+      color: white;
+      padding: 15px;
+      font-size: 1.5em;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    let total = 0;
+    header a {
+      color: white;
+      text-decoration: none;
+      background-color: #ff9f00;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
 
-    cart.forEach((item, index) => {
+    .cart-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info h3 {
+      margin: 0;
+      font-size: 1.1em;
+    }
+
+    .item-info p {
+      color: green;
+      margin: 5px 0;
+    }
+
+    .controls button {
+      padding: 5px 10px;
+      border: none;
+      color: white;
+      background-color: red;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .controls button:hover {
+      background-color: #d32f2f;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 1.3em;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      font-size: 1.2em;
+      margin: 50px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    🛒 Your Cart
+    <a href="index.html">⬅ Back to Store</a>
+  </header>
+
+  <div class="cart-container">
+    <div id="cart-items"></div>
+    <div id="cart-empty" class="empty" style="display:none;">Your cart is empty 🛍️</div>
+    <div class="total">Total: ₹<span id="total-price">0</span></div>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function updateCartDisplay() {
+      const cartItemsContainer = document.getElementById("cart-items");
+      const totalPriceElement = document.getElementById("total-price");
+      const emptyMsg = document.getElementById("cart-empty");
+
+      cartItemsContainer.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        emptyMsg.style.display = "block";
+        totalPriceElement.textContent = "0";
+        return;
+      } else {
+        emptyMsg.style.display = "none";
+      }
+
+      cart.forEach((item, index) => {
         total += item.price * item.quantity;
         cartItemsContainer.innerHTML += `
-            <div class="cart-item" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #ddd; padding:8px;">
-                <div>
-                    <strong>${item.name}</strong> - ₹${item.price} × ${item.quantity}
-                </div>
-                <div>
-                    <button onclick="decreaseQuantity(${index})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">-</button>
-                </div>
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="item-info">
+              <h3>${item.name}</h3>
+              <p>₹${item.price} × ${item.quantity}</p>
             </div>
+            <div class="controls">
+              <button onclick="decreaseQuantity(${index})">-</button>
+            </div>
+          </div>
         `;
-    });
+      });
 
-    totalPriceElement.textContent = `₹${total}`;
-    localStorage.setItem("cart", JSON.stringify(cart));
-}
+      totalPriceElement.textContent = total;
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
 
-// Decrease quantity or remove if 0
-function decreaseQuantity(index) {
-    if (cart[index].quantity > 1) {
+    function decreaseQuantity(index) {
+      if (cart[index].quantity > 1) {
         cart[index].quantity--;
-    } else {
+      } else {
         cart.splice(index, 1);
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartDisplay();
     }
-    updateCartDisplay();
-    updateCartCount();
-}
 
-function updateCartCount() {
-    const cartCount = document.getElementById("cart-count");
-    if (cartCount) {
-        cartCount.textContent = cart.length > 0 ? cart.length : "";
-    }
-}
+    document.addEventListener("DOMContentLoaded", updateCartDisplay);
+  </script>
 
-document.addEventListener("DOMContentLoaded", () => {
-    updateCartDisplay();
-    updateCartCount();
-});
-</script>
+</body>
+</html>
