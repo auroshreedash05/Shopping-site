@@ -11,33 +11,25 @@
       margin: 0;
       padding: 0;
     }
-
     header {
       background-color: #2874f0;
       color: white;
-      text-align: left;
-      padding: 15px 20px;
-      font-size: 1.8em;
-      font-weight: bold;
+      padding: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .cart {
-      font-size: 0.7em;
-      background: white;
-      color: #2874f0;
-      padding: 5px 12px;
-      border-radius: 20px;
-      cursor: pointer;
+      font-size: 1.5em;
       font-weight: bold;
     }
-
-    .cart:hover {
-      background-color: #e3e3e3;
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      background-color: #ff9f00;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
     }
-
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -45,7 +37,6 @@
       gap: 30px;
       padding: 40px 20px;
     }
-
     .product {
       background: white;
       width: 300px;
@@ -54,34 +45,28 @@
       overflow: hidden;
       transition: transform 0.2s ease;
     }
-
     .product:hover {
       transform: translateY(-5px);
     }
-
     .product img {
       width: 100%;
       height: 250px;
       object-fit: cover;
     }
-
     .details {
       padding: 15px;
       text-align: center;
     }
-
     .details h2 {
       font-size: 1.3em;
       margin: 10px 0;
       color: #333;
     }
-
     .price {
       color: green;
       font-size: 1.2em;
       margin-bottom: 10px;
     }
-
     .btn {
       background-color: #ff9f00;
       border: none;
@@ -92,11 +77,9 @@
       font-weight: bold;
       margin: 5px;
     }
-
     .btn:hover {
       background-color: #fb641b;
     }
-
     footer {
       background-color: white;
       text-align: center;
@@ -107,53 +90,55 @@
   </style>
 </head>
 <body>
-
   <header>
     🛒 My Shopping Store
-    <div class="cart" onclick="window.location.href='cart.html'">🛍️ Cart (<span id="cartCount">0</span>)</div>
+    <a href="cart.html">View Cart</a>
   </header>
 
   <div class="container">
-
-    <!-- Product 1 -->
     <div class="product">
       <img src="images/blue-tshirt.jpg" alt="Blue T-Shirt">
       <div class="details">
         <h2>Blue Cotton T-Shirt</h2>
         <div class="price">₹499</div>
-        <button class="btn" onclick="addToCart('Blue Cotton T-Shirt', 499, 'images/blue-tshirt.jpg')">Add to Cart</button>
+        <button class="btn add-to-cart" data-name="Blue Cotton T-Shirt" data-price="499" data-image="images/blue-tshirt.jpg">Add to Cart</button>
         <button class="btn" style="background-color:#388e3c;">Buy Now</button>
       </div>
     </div>
 
-    <!-- Product 2 -->
     <div class="product">
       <img src="images/shoe.jpg" alt="Stylish Shoes">
       <div class="details">
         <h2>Stylish Running Shoes</h2>
         <div class="price">₹1,299</div>
-        <button class="btn" onclick="addToCart('Stylish Running Shoes', 1299, 'images/shoe.jpg')">Add to Cart</button>
+        <button class="btn add-to-cart" data-name="Stylish Running Shoes" data-price="1299" data-image="images/shoe.jpg">Add to Cart</button>
         <button class="btn" style="background-color:#388e3c;">Buy Now</button>
       </div>
     </div>
-
   </div>
 
   <footer>© 2025 My Shopping Store | All Rights Reserved</footer>
 
   <script>
-    // Load cart from localStorage (so it remembers items)
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartCount = document.getElementById("cartCount");
-    cartCount.textContent = cart.length;
+    const buttons = document.querySelectorAll('.add-to-cart');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.getAttribute('data-name');
+        const price = btn.getAttribute('data-price');
+        const image = btn.getAttribute('data-image');
 
-    function addToCart(name, price, image) {
-      cart.push({ name, price, image });
-      localStorage.setItem("cart", JSON.stringify(cart));
-      cartCount.textContent = cart.length;
-      alert(name + " added to cart!");
-    }
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existing = cart.find(item => item.name === name);
+
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ name, price, image, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+      });
+    });
   </script>
-
 </body>
 </html>
