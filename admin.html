@@ -67,7 +67,7 @@
       color: #444;
     }
 
-    input, select {
+    input {
       padding: 10px;
       border: 2px solid #ddd;
       border-radius: 5px;
@@ -171,8 +171,8 @@
       </div>
 
       <div>
-        <label>Image Path:</label>
-        <input type="text" id="image" value="images/" placeholder="images/product.jpg" required>
+        <label>Upload Image:</label>
+        <input type="file" id="imageFile" accept="image/*">
       </div>
 
       <div class="preview">
@@ -206,10 +206,20 @@
     const form = document.getElementById('product-form');
     const table = document.getElementById('product-table');
     const preview = document.getElementById('image-preview');
+    const imageFile = document.getElementById('imageFile');
+    let imageData = 'images/default.jpg';
 
-    // 🖼️ Live Image Preview
-    document.getElementById('image').addEventListener('input', e => {
-      preview.src = e.target.value || 'images/default.jpg';
+    // 🖼️ Live image preview & convert to Base64
+    imageFile.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          imageData = reader.result; // base64 data
+          preview.src = imageData;
+        };
+        reader.readAsDataURL(file);
+      }
     });
 
     // 🧠 Load products
@@ -238,15 +248,15 @@
       const name = document.getElementById('name').value;
       const price = document.getElementById('price').value;
       const stock = document.getElementById('stock').value;
-      const image = document.getElementById('image').value || 'images/default.jpg';
 
       const products = JSON.parse(localStorage.getItem('products')) || [];
-      products.push({ name, price, stock, image });
+      products.push({ name, price, stock, image: imageData });
       localStorage.setItem('products', JSON.stringify(products));
 
       alert('✅ Product saved successfully!');
       form.reset();
       preview.src = 'images/default.jpg';
+      imageData = 'images/default.jpg';
       loadProducts();
     });
 
