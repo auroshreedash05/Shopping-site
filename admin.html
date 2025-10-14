@@ -144,19 +144,20 @@
       }
 
       products.forEach((p, index) => {
-       let imagesArray = [];
+        // handle both single and multiple image formats
+        let imagesArray = [];
+        if (Array.isArray(p.images) && p.images.length > 0) {
+          imagesArray = p.images;
+        } else if (p.image) {
+          imagesArray = [p.image];
+        } else {
+          imagesArray = ['images/default.jpg'];
+        }
 
-       if (Array.isArray(p.images) && p.images.length > 0) {
-         imagesArray = p.images;
-       } else if (p.image) {
-         imagesArray = [p.image];
-       } else {
-         imagesArray = ['images/default.jpg'];
-       }
+        const imagesHTML = imagesArray
+          .map(img => `<img src="${img}" alt="${p.name}">`)
+          .join('');
 
-       const imagesHTML = imagesArray
-         .map(img => `<img src="${img}" alt="${p.name}">`)
-         .join('');
         list.innerHTML += `
           <div class="product-card" id="product-${index}">
             <div class="product-info">
@@ -189,20 +190,23 @@
       }
 
       const products = JSON.parse(localStorage.getItem('products')) || [];
-      let imageUrls = [];
 
-      // Keep old images when editing
-      if (editIndex !== "") {
-        imageUrls = products[editIndex].images || [];
-      }
+      // Create image URLs (single or multiple)
+      const imageUrls = [];
+      if (img1) imageUrls.push(URL.createObjectURL(img1));
+      if (img2) imageUrls.push(URL.createObjectURL(img2));
+      if (img3) imageUrls.push(URL.createObjectURL(img3));
 
-      if (img1) imageUrls[0] = URL.createObjectURL(img1);
-      if (img2) imageUrls[1] = URL.createObjectURL(img2);
-      if (img3) imageUrls[2] = URL.createObjectURL(img3);
+      // Fallback for single image
+      let imageField = imageUrls.length > 0 ? imageUrls[0] : 'images/default.jpg';
 
-      if (imageUrls.length === 0) imageUrls.push('images/default.jpg');
-
-      const productData = { name, price, stock, images: imageUrls };
+      const productData = {
+        name,
+        price,
+        stock,
+        image: imageField,
+        images: imageUrls.length > 0 ? imageUrls : [imageField]
+      };
 
       if (editIndex !== "") {
         products[editIndex] = productData;
