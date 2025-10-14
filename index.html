@@ -26,22 +26,26 @@
     header a {
       color: white;
       text-decoration: none;
-      background-color: #ff9f00;
-      padding: 8px 15px;
-      border-radius: 5px;
+      background-color: #2874f0;
+      padding: 10px 15px;
+      border-radius: 50%;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.5rem;
       position: relative;
     }
 
+    /* Red cart count badge */
     #cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
       background: red;
       color: white;
-      font-size: 0.8rem;
-      padding: 2px 7px;
+      font-size: 0.7rem;
+      padding: 3px 6px;
       border-radius: 50%;
-      margin-left: 5px;
-      display: none; /* hidden initially */
+      display: none;
+      border: 2px solid white;
     }
 
     .container {
@@ -115,8 +119,8 @@
 <body>
 
   <header>
-    🛒 My Shopping Store
-    <a href="cart.html">Cart <span id="cart-count"></span></a>
+    🛍️ My Shopping Store
+    <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
   </header>
 
   <div class="container">
@@ -167,7 +171,7 @@
       }
     }
 
-    // Add to cart logic
+    // Add to cart logic with confetti
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const name = btn.getAttribute('data-name');
@@ -186,10 +190,10 @@
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
 
-        // 🎉 Confetti / Bubble Blast Effect
+        // Confetti burst
         confetti({
-          particleCount: 100,
-          spread: 80,
+          particleCount: 80,
+          spread: 70,
           origin: { y: 0.6 },
           colors: ['#ff9f00', '#2874f0', '#00e676', '#ff4081']
         });
@@ -199,6 +203,5 @@
     // Run once on page load
     updateCartCount();
   </script>
-
 </body>
 </html>
