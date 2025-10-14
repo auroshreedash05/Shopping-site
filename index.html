@@ -12,18 +12,19 @@
       padding: 0;
     }
 
-    header {
-      background-color: #2874f0;
-      color: white;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .header-top {
+    <header>
+  <div class="header-left">
+    🛒 My Shopping Store
+    <div class="location-bar">
+      <span class="location-icon">🏠</span>
+      <span class="location-text">Deliver to: Home - Faridabad, Haryana</span>
+    </div>
+  </div>
+  <a href="cart.html" class="cart-icon">
+    🛍️ <span id="cart-count"></span>
+  </a>
+</header>
+  .header-top {
       width: 100%;
       display: flex;
       justify-content: space-between;
