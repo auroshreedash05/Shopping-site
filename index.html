@@ -31,7 +31,28 @@
       font-size: 1.5em;
     }
 
-    header a {
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      background-color: #1f5fd1;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      transition: background 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #174bb0;
+    }
+
+    header a#cart-icon {
       color: white;
       text-decoration: none;
       background-color: #2874f0;
@@ -221,6 +242,13 @@
     <div class="header-top">
       🛍️ My Shopping Store
       <a href="cart.html" id="cart-icon">🛒<span id="cart-count"></span></a>
+    </div>
+
+    <!-- 👇 Added Navigation Links -->
+    <div class="nav-links">
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="admin.html">Admin Panel</a>
     </div>
 
     <div class="search-bar">
