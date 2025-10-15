@@ -69,6 +69,7 @@
       color: red;
       font-size: 0.85rem;
       margin-top: 5px;
+      height: 18px;
     }
   </style>
 </head>
@@ -84,13 +85,38 @@
   </div>
 
   <script>
+    // Auto redirect if already logged in
+    window.onload = function() {
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+      if (loggedInUser) {
+        window.location.href = "index.html";
+      }
+    };
+
+    // Login Function
     function loginUser() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const error = document.getElementById('error');
 
+      error.textContent = ""; // reset error message
+
       if (!email || !password) {
         error.textContent = "⚠️ Please fill all fields.";
+        return;
+      }
+
+      // Basic validation
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phonePattern = /^[0-9]{10}$/;
+
+      if (!emailPattern.test(email) && !phonePattern.test(email)) {
+        error.textContent = "⚠️ Enter a valid email or 10-digit phone number.";
+        return;
+      }
+
+      if (password.length < 4) {
+        error.textContent = "⚠️ Password must be at least 4 characters.";
         return;
       }
 
@@ -106,8 +132,12 @@
       alert("✅ Login successful!");
       window.location.href = "index.html"; // redirect to store page
     }
+
+    // Press Enter to login
+    document.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") loginUser();
+    });
   </script>
 
 </body>
 </html>
-
