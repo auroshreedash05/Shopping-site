@@ -1,1 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - My Shopping Store</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #2874f0);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .signup-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 350px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 95%;
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #1a5cd8;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: #2874f0;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+    <h2>📝 Sign Up</h2>
+    <input type="text" id="name" placeholder="Enter full name">
+    <input type="text" id="email" placeholder="Enter email or phone">
+    <input type="password" id="password" placeholder="Create password">
+    <input type="password" id="confirm-password" placeholder="Confirm password">
+    <button onclick="registerUser()">Sign Up</button>
+    <div class="error" id="error"></div>
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+  </div>
+
+  <script>
+    function registerUser() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+      const error = document.getElementById('error');
+
+      if (!name || !email || !password || !confirmPassword) {
+        error.textContent = "⚠️ Please fill all fields.";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        error.textContent = "❌ Passwords do not match.";
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const userExists = users.some(u => u.email === email || u.phone === email);
+
+      if (userExists) {
+        error.textContent = "⚠️ User already exists. Please login.";
+        return;
+      }
+
+      users.push({ name, email, password });
+      localStorage.setItem('users', JSON.stringify(users));
+
+      alert("✅ Account created successfully!");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
 
